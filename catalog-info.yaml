@@ -38,3 +38,13 @@ spec:
     email: carlos.dominguez1@tui.com
   memberOf: [foobar]
 ---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: Carlos
+spec:
+  profile:
+    displayName: Carlos
+    email: crlsdmngz3@gmail.com
+  memberOf: [foobar]
+---
