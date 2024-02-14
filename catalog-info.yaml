@@ -4,10 +4,9 @@ metadata:
   name: async-api-template
   title: TUI Event Template (AsyncAPI)
   description: The template will create an AsyncAPI document in your repository that may contain *multiple* event types. Thus, it is recommended to create one AsyncAPI document for each IT Service. Manual adjustments are possible after the generation. If the document is valid, it can be published through Gitlab CI pipeline step "Publish" which will create an MR in the central "Event Registry" repository and is the automatically being picked up by the Event Registry Service.
-  tags:
-    - event-registry
+
 spec:
-  owner: tedp
+  owner: backstage
   type: service
 
   parameters:
@@ -15,35 +14,17 @@ spec:
       description: The template will create an AsyncAPI document in your repository that may contain *multiple* event types. Thus, it is recommended to create one AsyncAPI document for each IT Service. Manual adjustments are possible after the generation. If the document is valid, it can be published through Gitlab CI pipeline step "Publish" which will create an MR in the central "Event Registry" repository and is the automatically being picked up by the Event Registry Service.
       properties:
         new:
-          required:
-            - name
           properties:
             title:
               title: title
               type: string
               description: title of your AsyncAPI document (e.g. 'Booking Service')
-              ui:autofocus: true
             name:
               title: name
               type: string
               description: unique machine-readable name of your AsyncAPI document (e.g. 'booking-service')
-              ui:field: EntityNamePicker
-    - title: Create Events and Schemas
-      description: Create Events and Schemas
-      properties:
-        new:
-          properties:
-            advanced_mode:
-              title: advanced-mode
-              type: boolean
-              description: The Advanced mode offers the option of adding more information to a schema. 
-              default: false   
 
     - title: Repository Location
-      required:
-        - repo_gitlab
-        - repo_owner
-        - repo_name
       properties:
         repo_gitlab:
           title: GitLab
@@ -52,15 +33,6 @@ spec:
           enum:
             - source.tui
             - test.source.tui
-        repo_owner:
-          title: Repository subgroup
-          type: string
-          ui:field: NoLeadingOrTrailingSlashValuePicker
-          default: myservice/subgroup
-          description: Subgroup in OneSource with no leading or trailing slash
-        repo_name:
-          title: Repository name
-          type: string
 
   # This template is meant to be used on top of an existing template.
   # By adding the following and fetching from an absolute URL you can
@@ -74,21 +46,6 @@ spec:
         values:
           title: ${{ parameters.new.title }}
           name: ${{ parameters.new.name }}
-    - id: create-schemas
-      name: Create Schemas
-      each: ${{ parameters.new.events }}
-      action: roadiehq:utils:fs:write
-      input:
-        path: ./api/${{ each.value.event_name }}.json
-        content: ${{ each.value.schema }}
-    - id: publish
-      name: Publish
-      action: publish:gitlab
-      input:
-        allowedHosts: ["source.tui","test.source.tui"]
-        repoUrl: ${{ parameters.repo_gitlab }}?owner=${{ parameters.repo_owner }}&repo=${{ parameters.repo_name }}
-        defaultBranch: main
-        repoVisibility: internal
 
     - id: register
       name: Register
