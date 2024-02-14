@@ -6,9 +6,6 @@ metadata:
   description: The template will create an AsyncAPI document in your repository that may contain *multiple* event types. Thus, it is recommended to create one AsyncAPI document for each IT Service. Manual adjustments are possible after the generation. If the document is valid, it can be published through Gitlab CI pipeline step "Publish" which will create an MR in the central "Event Registry" repository and is the automatically being picked up by the Event Registry Service.
 
 spec:
-  owner: backstage
-  type: service
-
   parameters:
   - title: Fill in some steps
     required:
