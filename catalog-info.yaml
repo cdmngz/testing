@@ -4,10 +4,6 @@ metadata:
   name: onboarding-glamour
   title: Glamour Onboarding
   description: Template to create a glamour-config repo in your root Gitlab group.
-  tags:
-    - infrastructure
-    - glamour
-    - recommended
     
 spec:
   owner: backstage
@@ -24,8 +20,3 @@ spec:
           title: Owner
           type: string
           description: Name of your team group in Runway
-
-  steps:
-    - id: fetch
-      name: Template Skeleton
-      action: fetch:template
