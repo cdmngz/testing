@@ -4,10 +4,6 @@ metadata:
   name: onboarding-glamour
   title: Glamour Onboarding
   description: Template to create a glamour-config repo in your root Gitlab group.
-  tags:
-    - infrastructure
-    - glamour
-    - recommended
 spec:
   owner: backstage
   type: service
@@ -22,15 +18,10 @@ spec:
           title: Location of your root group in OneSource with no leading or trailing slash
           type: string
           description: Enter the path of your Gitlab root group to create this repo in there.
-          ui:field: NoLeadingOrTrailingSlashValuePicker
         owner:
           title: Owner
           type: string
           description: Name of your team group in Runway
-          ui:field: OwnerPicker
-          ui:options:
-            allowedKinds:
-              - Group
 
   steps:
     - id: fetch
@@ -41,20 +32,6 @@ spec:
         values:
           repository_location: ${{ parameters.repository_location }}
           projectId: ${{ steps.getgitlabprojectid.output.projectId }}
-
-    - id: publish
-      name: Publish
-      action: publish:gitlab
-      input:
-        repoUrl: source.tui?owner=${{ parameters.repository_location }}&repo=glamour-config
-        defaultBranch: main
-        repoVisibility: internal
-
-    - id: getgitlabprojectid
-      name: Get GitLab Project ID
-      action: tui:get-gitlab-projectid
-      input:
-        remoteUrl: ${{ steps.publish.output.remoteUrl }}
 
   output:
     links:
