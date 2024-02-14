@@ -10,34 +10,38 @@ spec:
   type: service
 
   parameters:
-    - title: Fill in some steps
-      description: The template will create an AsyncAPI document in your repository that may contain *multiple* event types. Thus, it is recommended to create one AsyncAPI document for each IT Service. Manual adjustments are possible after the generation. If the document is valid, it can be published through Gitlab CI pipeline step "Publish" which will create an MR in the central "Event Registry" repository and is the automatically being picked up by the Event Registry Service.
-      properties:
-        new:
-          properties:
-            title:
-              title: title
-              type: string
-              description: title of your AsyncAPI document (e.g. 'Booking Service')
-            name:
-              title: name
-              type: string
-              description: unique machine-readable name of your AsyncAPI document (e.g. 'booking-service')
-
-    - title: Repository Location
-      properties:
-        repo_gitlab:
-          title: GitLab
-          type: string
-          default: source.tui
-          enum:
-            - source.tui
-            - test.source.tui
-
-  steps:
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: /catalog-info.yaml
+  - title: Fill in some steps
+    required:
+      - name
+    properties:
+      name:
+        title: Name
+        type: string
+        description: Unique name of the component
+      owner:
+        title: Owner
+        type: string
+        description: Owner of the component
+        ui:field: OwnerPicker
+        ui:options:
+          catalogFilter:
+            kind: Group
+  - title: Choose a location
+    required:
+      - repoUrl
+    properties:
+      repoUrl:
+        title: Repository Location
+        type: string
+        ui:field: RepoUrlPicker
+        ui:options:
+          allowedHosts:
+            - github.com
+steps:
+  - id: fetch-base
+    name: Fetch Base
+    action: fetch:template
+    input:
+      url: ./template
+      values:
+        name: ${{parameters.name}}
