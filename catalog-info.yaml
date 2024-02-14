@@ -31,9 +31,6 @@ spec:
         url: ./skeleton
         values:
           repository_location: ${{ parameters.repository_location }}
-          projectId: ${{ steps.getgitlabprojectid.output.projectId }}
+          projectId: 1234
 
-  output:
-    links:
-      - title: Repository
-        url: ${{ steps.publish.output.remoteUrl }}
+
