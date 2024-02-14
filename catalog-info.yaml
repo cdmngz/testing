@@ -24,9 +24,6 @@ spec:
   
   parameters:
     - title: Basic configuration
-      required:
-        - repository_location
-        - owner
       properties:
         repository_location:
           title: Location of your root group in OneSource with no leading or trailing slash
