@@ -29,16 +29,3 @@ spec:
     - id: fetch
       name: Template Skeleton
       action: fetch:template
-      input:
-        url: ./skeleton
-        values:
-          repository_location: ${{ parameters.repository_location }}
-          projectId: ${{ steps.getgitlabprojectid.output.projectId }}
-
-    - id: publish
-      name: Publish
-      action: publish:gitlab
-      input:
-        repoUrl: source.tui?owner=${{ parameters.repository_location }}&repo=glamour-config
-        defaultBranch: main
-        repoVisibility: internal
