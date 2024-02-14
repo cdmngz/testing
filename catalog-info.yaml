@@ -17,12 +17,6 @@ spec:
         new:
           required:
             - name
-            - system
-            - owner
-            - version
-            - description
-            - contact_name
-            - contact_email
           properties:
             title:
               title: title
@@ -34,40 +28,6 @@ spec:
               type: string
               description: unique machine-readable name of your AsyncAPI document (e.g. 'booking-service')
               ui:field: EntityNamePicker
-            system:
-              title: system
-              type: string
-              description: system to which your API belongs (e.g. 'edp-data-lake')
-              ui:field: EntityPicker
-              ui:options:
-                catalogFilter:
-                  - kind: System
-            owner:
-              title: owner
-              type: string
-              description: owner of the repository
-              ui:field: OwnerPicker
-              ui:options:
-                catalogFilter:
-                  - kind: Group
-            version:
-              title: version
-              type: string
-              pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
-              description: version of your AsyncAPI document (e.g. '1.0.0', see SemVer, https://semver.org/)
-            description:
-              title: description
-              type: string
-            contact_name:
-              title: contact_name  
-              type: string
-              description: name of your contact team (e.g. 'edp') already registered with the Contact-Service (https://portal.edp.tui/contact-service). The team members are the responsible contact persons for the defined events in the repository.
-              ui:field: ApiPicker
-            contact_email:
-              title: contact_email
-              type: string
-              pattern: '^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$'
-              description: TUI Email address of a contact person or team responsible for the maintenance of this file (e.g. 'john.doe@tui.com')
     - title: Create Events and Schemas
       description: Create Events and Schemas
       properties:
@@ -77,132 +37,7 @@ spec:
               title: advanced-mode
               type: boolean
               description: The Advanced mode offers the option of adding more information to a schema. 
-              default: false
-          allOf:
-          - if:
-              properties:
-                advanced_mode:
-                  const: false
-            then:
-              properties:
-                events:
-                  type: array
-                  title: List of Events
-                  items:
-                    type: object
-                    properties:
-                      event_name:
-                        title: event-name
-                        type: string
-                        pattern: '^[a-z]+[a-z0-9-]*$'
-                        description: unique combination of an event name and its version (e.g. 'booking-confirmation-v1.0')
-                      schema_source:
-                        title: schema-source
-                        enum:
-                        - URI
-                        - plain
-                        default: URI
-                    required:
-                    - event_name
-                    - schema_source
-                    allOf:
-                    - if:
-                        properties:
-                          schema_source:
-                            const: URI
-                      then:
-                        properties:
-                          schema_uri:
-                            title: schema-uri
-                            type: string
-                            pattern: '^((?:https):\/\/)?((?:[a-z0-9]+\.)*[a-z]+|(?:(?:25[0-5]|2[0-4]\d|1?\d{2}|\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d{2}|\d))(:\d+)?(\/.+\/?)*$'
-                            description: URI to JSON schema already registered with the one-schema-service that describes the payload of your event (e.g. 'https://schema.tui/enabling-data-platforms/oneschema/schemaDocumentCreated/1.0')
-                        required:
-                        - schema_uri
-                    - if:
-                        properties:
-                          schema_source:
-                            const: plain
-                      then:
-                        properties:
-                          schema:
-                            title: schema
-                            type: string
-                        required:
-                        - schema
-          - if:
-              properties:
-                advanced_mode:
-                  const: true
-            then:
-              properties:
-                events:
-                  type: array
-                  title: List of Events
-                  items:
-                    type: object
-                    properties:
-                      event_name:
-                        title: event-name
-                        type: string
-                        pattern: '^[a-z]+[a-z0-9-]*$'
-                        description: unique combination of an event name and its version (e.g. 'booking-confirmation-v1.0')
-                      schema_source:
-                        enum:
-                        - URI
-                        - plain
-                        default: URI
-                    required:
-                    - event_name
-                    - schema_source
-                    allOf:
-                    - if:
-                        properties:
-                          schema_source:
-                            const: URI
-                      then:
-                        properties:
-                          schema_uri:
-                            title: schema-uri
-                            type: string
-                            pattern: '^((?:https):\/\/)?((?:[a-z0-9]+\.)*[a-z]+|(?:(?:25[0-5]|2[0-4]\d|1?\d{2}|\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d{2}|\d))(:\d+)?(\/.+\/?)*$'
-                            description: URI to JSON schema already registered with the one-schema-service that describes the payload of your event (e.g. 'https://schema.tui/enabling-data-platforms/oneschema/schemaDocumentCreated/1.0')
-                        required:
-                        - schema_uri
-                    - if:
-                        properties:
-                          schema_source:
-                            const: plain
-                      then:
-                        properties:
-                          schema:
-                            title: schema
-                            type: string
-                          schema_name:
-                            title: schema-name
-                            type: string
-                          schema_group:
-                            title: schema-group
-                            type: string
-                          schema_type:
-                            title: schema-type
-                            enum:
-                            - enums
-                            - schema
-                            - types
-                          confidentiality:
-                            title: confidentiality
-                            enum:
-                            - confidential
-                            - internal
-                            - personal
-                            - public
-                        required:
-                        - schema
-                        - schema_name
-                        - schema_group
-                        - schema_type
-                        - confidentiality      
+              default: false   
 
     - title: Repository Location
       required:
@@ -239,16 +74,6 @@ spec:
         values:
           title: ${{ parameters.new.title }}
           name: ${{ parameters.new.name }}
-          system: ${{ parameters.new.system }}
-          owner: ${{ parameters.new.owner }}
-          version: ${{ parameters.new.version }}
-          description: ${{ parameters.new.description }}
-          contact_name: ${{ parameters.new.contact_name }}
-          contact_email: ${{ parameters.new.contact_email }}
-          events: ${{ parameters.new.events }}
-          repo_gitlab: ${{ parameters.repo_gitlab }}
-          repo_owner: ${{ parameters.repo_owner }}
-          repo_name: ${{ parameters.repo_name }}
     - id: create-schemas
       name: Create Schemas
       each: ${{ parameters.new.events }}
