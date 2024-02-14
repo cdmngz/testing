@@ -8,12 +8,8 @@ metadata:
     - infrastructure
     - glamour
     - recommended
-  links:
-    - url: https://source.tui/cloud/cloud-fabric/glamour/-/tree/dev/docs
-      title: Glamour user guide
-      icon: docs
 spec:
-  owner: enablers-cloudfabric
+  owner: backstage
   type: service
 
   parameters:
@@ -64,15 +60,3 @@ spec:
     links:
       - title: Repository
         url: ${{ steps.publish.output.remoteUrl }}
-      - title: Create token for Glamour
-        url: https://source.tui/groups/${{ parameters.repository_location }}/-/settings/access_tokens
-        icon: user
-      - title: Add token as masked variable GLAMOUR_TOKEN
-        url: ${{ steps.publish.output.remoteUrl }}/-/settings/ci_cd
-        icon: user
-      - title: Enable shared Gitlab runner
-        url: ${{ steps.publish.output.remoteUrl }}/-/settings/ci_cd
-        icon: user
-      - title: Open in catalog
-        icon: catalog
-        entityRef: ${{ steps.register.output.entityRef }}
