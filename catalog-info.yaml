@@ -1,27 +1,18 @@
-apiVersion: backstage.io/v1alpha1
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: test
-  description: |
-    Backstage is an open-source developer portal that puts the developer experience first.
-  links:
-    - title: Website
-      url: http://backstage.io
-    - title: Documentation
-      url: https://backstage.io/docs
-    - title: Storybook
-      url: https://backstage.io/storybook
-    - title: Discord Chat
-      url: https://discord.com/invite/EBHEGzX
-  annotations:
-    github.com/project-slug: backstage/backstage
-    backstage.io/techdocs-ref: dir:.
-    lighthouse.com/website-url: https://backstage.io
+  name: onboarding-glamour
+  title: Glamour Onboarding
+  description: Template to create a glamour-config repo in your root Gitlab group.
+  tags:
+    - infrastructure
+    - glamour
+    - recommended
+    
 spec:
-  type: library
-  owner: CNCF
-  lifecycle: experimental
-  
+  owner: backstage
+  type: service
+
   parameters:
     - title: Basic configuration
       properties:
@@ -33,3 +24,21 @@ spec:
           title: Owner
           type: string
           description: Name of your team group in Runway
+
+  steps:
+    - id: fetch
+      name: Template Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          repository_location: ${{ parameters.repository_location }}
+          projectId: ${{ steps.getgitlabprojectid.output.projectId }}
+
+    - id: publish
+      name: Publish
+      action: publish:gitlab
+      input:
+        repoUrl: source.tui?owner=${{ parameters.repository_location }}&repo=glamour-config
+        defaultBranch: main
+        repoVisibility: internal
