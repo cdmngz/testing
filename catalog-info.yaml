@@ -1,44 +1,198 @@
-apiVersion: backstage.io/v1alpha1
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: async-api-template
   title: TUI Event Template (AsyncAPI)
   description: The template will create an AsyncAPI document in your repository that may contain *multiple* event types. Thus, it is recommended to create one AsyncAPI document for each IT Service. Manual adjustments are possible after the generation. If the document is valid, it can be published through Gitlab CI pipeline step "Publish" which will create an MR in the central "Event Registry" repository and is the automatically being picked up by the Event Registry Service.
-
+  tags:
+    - event-registry
 spec:
+  owner: tedp
+  type: service
   parameters:
-  - title: Fill in some steps
-    required:
-      - name
-    properties:
-      name:
-        title: Name
-        type: string
-        description: Unique name of the component
-      owner:
-        title: Owner
-        type: string
-        description: Owner of the component
-        ui:field: OwnerPicker
-        ui:options:
-          catalogFilter:
-            kind: Group
-  - title: Choose a location
-    required:
-      - repoUrl
-    properties:
-      repoUrl:
-        title: Repository Location
-        type: string
-        ui:field: RepoUrlPicker
-        ui:options:
-          allowedHosts:
-            - github.com
-steps:
-  - id: fetch-base
-    name: Fetch Base
-    action: fetch:template
-    input:
-      url: ./template
-      values:
-        name: ${{parameters.name}}
+    - title: Fill in some steps
+      description: The template will create an AsyncAPI document in your repository that may contain *multiple* event types. Thus, it is recommended to create one AsyncAPI document for each IT Service. Manual adjustments are possible after the generation. If the document is valid, it can be published through Gitlab CI pipeline step "Publish" which will create an MR in the central "Event Registry" repository and is the automatically being picked up by the Event Registry Service.
+      required: 
+        - name
+        - system
+        - owner
+        - version
+        - description
+        - contact_email
+      properties:
+        title:
+          title: title
+          type: string
+          description: title of your AsyncAPI document (e.g. 'Booking Service')
+          ui:autofocus: true
+        name:
+          title: name
+          type: string
+          description: unique machine-readable name of your AsyncAPI document (e.g. 'booking-service')
+          ui:field: EntityNamePicker
+        system:
+          title: system
+          type: string
+          description: system to which your API belongs (e.g. 'edp-data-lake')
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              - kind: System
+        owner:
+          title: owner
+          type: string
+          description: owner of the repository
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              - kind: Group
+        version:
+          title: version
+          type: string
+          pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
+          description: version of your AsyncAPI document (e.g. '1.0.0', see SemVer, https://semver.org/)
+        description:
+          title: description
+          type: string
+        contact_name:
+          title: contact_name  
+          type: string
+          description: name of your contact team (e.g. 'edp') already registered with the Contact-Service (https://portal.edp.tui/contact-service). The team members are the responsible contact persons for the defined events in the repository.
+          ui:field: ApiPicker
+          ui:options:
+            entityApiUrl: /api/proxy/edp/contact-service/data-lake/contact-teams
+            entityJsonPath: $.* 
+        contact_email:
+          title: contact_email
+          type: string
+          pattern: '^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$'
+          description: TUI Email address of a contact person or team responsible for the maintenance of this file (e.g. 'john.doe@tui.com')
+    - title: Create Events
+      description: Create Events
+      properties:
+        snsTopics:
+          type: array
+          title: List of Topics
+          items:
+            type: object
+            properties:
+              name:
+                title: topic-name
+                type: string
+                description: Event Name + Environment(dev,sit,preprod,prod)
+              snsArn:
+                title: sns arn
+                type: string
+                description: Complete Arn
+              tags:
+                type: array
+                title: List of Tags
+                items:
+                  title: Tag
+                  type: string  
+              events:
+                type: array
+                title: List of Events
+                items:
+                  type: object
+                  properties: 
+                    event_name:
+                      title: event-name
+                      type: string
+                      pattern: '^[a-z]+[a-z0-9-]*$'
+                      description: unique combination of an event name and its version (e.g. 'booking-confirmation-v1.0')
+                    schema_uri:
+                      title: schema-uri
+                      type: string
+                      pattern: '^((?:https):\/\/)?((?:[a-z0-9]+\.)*[a-z]+|(?:(?:25[0-5]|2[0-4]\d|1?\d{2}|\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d{2}|\d))(:\d+)?(\/.+\/?)*$'
+                      description: URI to JSON schema already registered with the one-schema-service that describes the payload of your event (e.g. 'https://schema.tui/enabling-data-platforms/oneschema/schemaDocumentCreated/1.0'). If you don't have schema yet, click here 'https://runway.devops.tui/edpportal/one-schema'
+                    tags:
+                      type: array
+                      title: List of Tags
+                      items:
+                        title: Tag
+                        type: string 
+                  required:
+                    - event_name
+                    - schema_uri       
+            required:
+              - name
+              - snsArn             
+       
+
+    - title: Repository Location
+      required:
+        - repo_gitlab
+        - repo_owner
+        - repo_name
+      properties:
+        repo_gitlab:
+          title: GitLab
+          type: string
+          default: source.tui
+          enum:
+            - source.tui
+            - test.source.tui
+        repo_owner:
+          title: Repository subgroup
+          type: string
+          ui:field: NoLeadingOrTrailingSlashValuePicker
+          default: myservice/subgroup
+          description: Subgroup in OneSource with no leading or trailing slash
+        repo_name:
+          title: Repository name
+          type: string
+
+  # This template is meant to be used on top of an existing template.
+  # By adding the following and fetching from an absolute URL you can
+  # add in the docs template
+  steps:
+    - id: fetch
+      name: Template Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          title: ${{ parameters.title }}
+          name: ${{ parameters.name }}
+          system: ${{ parameters.system }}
+          owner: ${{ parameters.owner }}
+          version: ${{ parameters.version }}
+          description: ${{ parameters.description }}
+          contact_name: ${{ parameters.contact_name }}
+          contact_email: ${{ parameters.contact_email }}
+          events: ${{ parameters.events }}
+          snsTopics: ${{ parameters.snsTopics }}
+          repo_gitlab: ${{ parameters.repo_gitlab }}
+          repo_owner: ${{ parameters.repo_owner }}
+          repo_name: ${{ parameters.repo_name }}
+    - id: create-schemas
+      name: Create Schemas
+      each: ${{ parameters.events }}
+      action: roadiehq:utils:fs:write
+      input:
+        path: ./api/${{ each.value.event_name }}.json
+        content: ${{ each.value.schema }}
+    - id: publish
+      name: Publish
+      action: publish:gitlab
+      input:
+        allowedHosts: ["source.tui","test.source.tui"]
+        repoUrl: ${{ parameters.repo_gitlab }}?owner=${{ parameters.repo_owner }}&repo=${{ parameters.repo_name }}
+        defaultBranch: main
+        repoVisibility: internal
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
