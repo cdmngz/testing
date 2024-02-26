@@ -151,12 +151,6 @@ spec:
           repo_gitlab: ${{ parameters.repo_gitlab }}
           repo_owner: ${{ parameters.repo_owner }}
           repo_name: ${{ parameters.repo_name }}
-    - id: create-schemas
-      name: Create Schemas
-      each: ${{ parameters.events }}
-      input:
-        path: ./api/${{ each.value.event_name }}.json
-        content: ${{ each.value.schema }}
     - id: publish
       name: Publish
       input:
