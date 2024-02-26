@@ -29,23 +29,14 @@ spec:
           title: name
           type: string
           description: unique machine-readable name of your AsyncAPI document (e.g. 'booking-service')
-          ui:field: EntityNamePicker
         system:
           title: system
           type: string
           description: system to which your API belongs (e.g. 'edp-data-lake')
-          ui:field: EntityPicker
-          ui:options:
-            catalogFilter:
-              - kind: System
         owner:
           title: owner
           type: string
           description: owner of the repository
-          ui:field: OwnerPicker
-          ui:options:
-            catalogFilter:
-              - kind: Group
         version:
           title: version
           type: string
@@ -58,10 +49,6 @@ spec:
           title: contact_name  
           type: string
           description: name of your contact team (e.g. 'edp') already registered with the Contact-Service (https://portal.edp.tui/contact-service). The team members are the responsible contact persons for the defined events in the repository.
-          ui:field: ApiPicker
-          ui:options:
-            entityApiUrl: /api/proxy/edp/contact-service/data-lake/contact-teams
-            entityJsonPath: $.* 
         contact_email:
           title: contact_email
           type: string
@@ -136,7 +123,6 @@ spec:
         repo_owner:
           title: Repository subgroup
           type: string
-          ui:field: NoLeadingOrTrailingSlashValuePicker
           default: myservice/subgroup
           description: Subgroup in OneSource with no leading or trailing slash
         repo_name:
