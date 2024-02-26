@@ -135,7 +135,6 @@ spec:
   steps:
     - id: fetch
       name: Template Skeleton
-      action: fetch:template
       input:
         url: ./skeleton
         values:
@@ -155,25 +154,16 @@ spec:
     - id: create-schemas
       name: Create Schemas
       each: ${{ parameters.events }}
-      action: roadiehq:utils:fs:write
       input:
         path: ./api/${{ each.value.event_name }}.json
         content: ${{ each.value.schema }}
     - id: publish
       name: Publish
-      action: publish:gitlab
       input:
         allowedHosts: ["source.tui","test.source.tui"]
         repoUrl: ${{ parameters.repo_gitlab }}?owner=${{ parameters.repo_owner }}&repo=${{ parameters.repo_name }}
         defaultBranch: main
         repoVisibility: internal
-
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
-        catalogInfoPath: /catalog-info.yaml
 
   output:
     links:
